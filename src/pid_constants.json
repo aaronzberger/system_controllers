@@ -1,0 +1,104 @@
+{
+    "ur5a_arm": {
+        "shoulder_pan": {
+            "PID": [21, 0.0, 0.11],
+            "setpoint": 0,
+            "max_vel": 2
+        },
+        "shoulder_lift": {
+            "PID": [30, 0.0, 0.1],
+            "setpoint": -1.57,
+            "max_vel": 2
+        },
+        "forearm_T": {
+            "PID": [15, 0.0, 0.05],
+            "setpoint": 1.57,
+            "max_vel": 2
+        },
+        "wrist_1": {
+            "PID": [21, 0.0, 0.01],
+            "setpoint": -1.57,
+            "max_vel": 1
+        },
+        "wrist_2": {
+            "PID": [15, 0.0, 0.01],
+            "setpoint": -1.57,
+            "max_vel": 1
+        },
+        "wrist_3": {
+            "PID": [15, 0.0, 0.01],
+            "setpoint": 0,
+            "max_vel": 10
+        }
+    },
+    "ur5a_rail": {
+        "rail": {
+            "PID": [40, 0, 1.5],
+            "setpoint": 0,
+            "max_vel": 20
+        }
+    },
+    "ur5b_arm": {
+        "shoulder_pan": {
+            "PID": [21, 0.0, 0.11],
+            "setpoint": 0,
+            "max_vel": 2
+        },
+        "shoulder_lift": {
+            "PID": [30, 0.0, 0.1],
+            "setpoint": -1.57,
+            "max_vel": 2
+        },
+        "forearm_T": {
+            "PID": [15, 0.0, 0.05],
+            "setpoint": 1.57,
+            "max_vel": 2
+        },
+        "wrist_1": {
+            "PID": [21, 0.0, 0.01],
+            "setpoint": -1.57,
+            "max_vel": 1
+        },
+        "wrist_2": {
+            "PID": [15, 0.0, 0.01],
+            "setpoint": -1.57,
+            "max_vel": 1
+        },
+        "wrist_3": {
+            "PID": [15, 0.0, 0.01],
+            "setpoint": 0,
+            "max_vel": 10
+        }
+    },
+    "ur5b_rail": {
+        "rail": {
+            "PID": [40, 0, 1.5],
+            "setpoint": 0,
+            "max_vel": 20
+        }
+    },
+    "free_flyer": {
+        "X": {
+            "PID": [200, 0, 0],
+            "setpoint": 0,
+            "max_vel": 5.5
+        },
+        "Y": {
+            "PID": [200, 0, 0],
+            "setpoint": 0,
+            "max_vel": 5.5
+        },
+        "Z": {
+            "PID": [200, 0, 0],
+            "setpoint": 0,
+            "max_vel": 5.5
+        }
+    },
+    "free_flyer_arm": {
+        "arm": {
+            "PID": [42, 0.1, 0.0],
+            "setpoint": 0,
+            "max_vel": 5.5
+        }
+    }
+}
