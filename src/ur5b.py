@@ -15,7 +15,7 @@ TOLERANCE = 0.01
 
 class UR5B_Arm(Controller):
     def __init__(self):
-        super().__init__('ur5b_arm', 6)
+        super().__init__('ur5b_arm', 7)
 
         self.pid_list = []
         for motor in self.pid_constants:
@@ -23,12 +23,6 @@ class UR5B_Arm(Controller):
                 motor['PID'], setpoint=motor['setpoint'],
                 output_limits=(-motor['max_vel'], motor['max_vel']),
                 sample_time=None))
-
-    def update_positions(self, data: Float64MultiArray):
-        assert len(self.actuator_positions) == len(data.data), \
-            'Received {} actuator positions but the group {} expected {}'.format(
-                len(data.data), self.ns, len(self.actuator_positions))
-        self.actuator_positions = data.data
 
     def execute(self, goal):
         # Interpret the text position into a 3d position
@@ -99,12 +93,6 @@ class UR5B_Rail(Controller):
                 motor['PID'], setpoint=motor['setpoint'],
                 output_limits=(-motor['max_vel'], motor['max_vel']),
                 sample_time=None))
-
-    def update_positions(self, data: Float64MultiArray):
-        assert len(self.actuator_positions) == len(data.data), \
-            'Received {} actuator positions but the group {} expected {}'.format(
-                len(data.data), self.ns, len(self.actuator_positions))
-        self.actuator_positions = data.data
 
     def execute(self, goal):
         # Interpret the text position into a 3d position

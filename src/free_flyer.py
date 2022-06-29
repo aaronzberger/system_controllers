@@ -22,12 +22,6 @@ class Free_Flyer(Controller):
                 output_limits=(-motor['max_vel'], motor['max_vel']),
                 sample_time=None))
 
-    def update_positions(self, data: Float64MultiArray):
-        assert len(self.actuator_positions) == len(data.data), \
-            'Received {} actuator positions but the group {} expected {}'.format(
-                len(data.data), self.ns, len(self.actuator_positions))
-        self.actuator_positions = data.data
-
     def execute(self, goal):
         # Interpret the text position into a 3d position
         try:
@@ -93,12 +87,6 @@ class Free_Flyer_Arm(Controller):
                 motor['PID'], setpoint=motor['setpoint'],
                 output_limits=(-motor['max_vel'], motor['max_vel']),
                 sample_time=None))
-
-    def update_positions(self, data: Float64MultiArray):
-        assert len(self.actuator_positions) == len(data.data), \
-            'Received {} actuator positions but the group {} expected {}'.format(
-                len(data.data), self.ns, len(self.actuator_positions))
-        self.actuator_positions = data.data
 
     def execute(self, goal):
         # Interpret the text position into a 3d position

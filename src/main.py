@@ -23,13 +23,4 @@ if __name__ == '__main__':
             subsystems[i].__name__, i + 1, len(subsystems)), color='yellow'), end='', flush=True)
         print(colored('CONNECTED', color='green'))
 
-    # ur5a_arm = UR5A_Arm()
-    # ur5a_rail = UR5A_Rail()
-
-    # ur5b_arm = UR5B_Arm()
-    # ur5b_rail = UR5B_Rail()
-
-    # free_flyer = Free_Flyer()
-    # free_flyer_arm = Free_Flyer_Arm()
-
     rospy.spin()
