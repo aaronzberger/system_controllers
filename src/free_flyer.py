@@ -5,17 +5,15 @@ from controller import Controller
 from std_msgs.msg import Float64MultiArray
 from simple_pid import PID
 
-from ik import ik_direct
-
 ACTION_HZ = 25
 
 # TODO: Should be defined per action
 TOLERANCE = 0.01
 
 
-class UR5A_Arm(Controller):
+class Free_Flyer(Controller):
     def __init__(self):
-        super().__init__('ur5a_arm', 6)
+        super().__init__('free_flyer', 3)
 
         self.pid_list = []
         for motor in self.pid_constants:
@@ -37,14 +35,10 @@ class UR5A_Arm(Controller):
         except KeyError:
             print('Unknown position \'{}\' for system \'{}\''.format(goal.end, self.ns))
 
-        # current = self.sim.data.body_xpos[self.model.body_name2id('base_link')]
-        # Run IK
-        joint_angles = ik_direct(*positions)
-
-        assert len(joint_angles) == self.num_motors, 'Number of motors mismatch for position \'{}\''.format(goal.end)
+        assert len(positions) == self.num_motors, 'Number of motors mismatch for position \'{}\''.format(goal.end)
 
         # Set the desired positions in the controllers
-        for setpt, controller in zip(joint_angles, self.pid_list):
+        for setpt, controller in zip(positions, self.pid_list):
             controller.setpoint = setpt
         # TODO: Above might not work if the controller is copied in the zip
 
@@ -89,9 +83,9 @@ class UR5A_Arm(Controller):
             self.action_server.set_succeeded(self._result)
 
 
-class UR5A_Rail(Controller):
+class Free_Flyer_Arm(Controller):
     def __init__(self):
-        super().__init__('ur5a_rail', 1)
+        super().__init__('free_flyer_arm', 1)
 
         self.pid_list = []
         for motor in self.pid_constants:

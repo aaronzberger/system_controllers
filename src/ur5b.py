@@ -13,9 +13,9 @@ ACTION_HZ = 25
 TOLERANCE = 0.01
 
 
-class UR5A_Arm(Controller):
+class UR5B_Arm(Controller):
     def __init__(self):
-        super().__init__('ur5a_arm', 6)
+        super().__init__('ur5b_arm', 6)
 
         self.pid_list = []
         for motor in self.pid_constants:
@@ -89,9 +89,9 @@ class UR5A_Arm(Controller):
             self.action_server.set_succeeded(self._result)
 
 
-class UR5A_Rail(Controller):
+class UR5B_Rail(Controller):
     def __init__(self):
-        super().__init__('ur5a_rail', 1)
+        super().__init__('ur5b_rail', 1)
 
         self.pid_list = []
         for motor in self.pid_constants:

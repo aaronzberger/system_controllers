@@ -14,8 +14,10 @@ VELOCITY_TOPIC_PREFIX = '/velocities_'
 
 
 class Controller():
-    positions = json.load(os.join(rospkg.RosPack().get_path('system_controllers'), 'src', 'positions.json'))
-    pid_constants = json.load(os.join(rospkg.RosPack().get_path('system_controllers'), 'src', 'positions.json'))
+    positions = json.load(open(os.path.join(
+        rospkg.RosPack().get_path('system_controllers'), 'src', 'positions.json'), 'r'))
+    pid_constants = json.load(open(os.path.join(
+        rospkg.RosPack().get_path('system_controllers'), 'src', 'pid_constants.json'), 'r'))
 
     def __init__(self, ns: str, num_motors: int):
         self.ns = ns
