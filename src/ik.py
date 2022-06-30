@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
-import numpy as np
+import os
+
 import ikpy
 import ikpy.chain
-import os
+import numpy as np
 import rospkg
-
 
 ee_chain = ikpy.chain.Chain.from_urdf_file(os.path.join(
     rospkg.RosPack().get_path('system_controllers'), 'ur5.urdf'))

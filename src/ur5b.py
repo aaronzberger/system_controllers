@@ -1,147 +1,20 @@
 #!/usr/bin/python3
 
-import rospy
 from controller import Controller
-from std_msgs.msg import Float64MultiArray
-from simple_pid import PID
-
 from ik import ik_direct
-
-ACTION_HZ = 25
-
-# TODO: Should be defined per action
-TOLERANCE = 0.01
 
 
 class UR5B_Arm(Controller):
     def __init__(self):
         super().__init__('ur5b_arm', 7)
 
-        self.pid_list = []
-        for motor in self.pid_constants:
-            self.pid_list.append(PID(
-                motor['PID'], setpoint=motor['setpoint'],
-                output_limits=(-motor['max_vel'], motor['max_vel']),
-                sample_time=None))
-
-    def execute(self, goal):
-        # Interpret the text position into a 3d position
-        try:
-            positions = Controller.positions[goal.end][0]
-        except KeyError:
-            print('Unknown position \'{}\' for system \'{}\''.format(goal.end, self.ns))
-
+    def position_to_joint_angles(self, positions):
         # current = self.sim.data.body_xpos[self.model.body_name2id('base_link')]
         # Run IK
         joint_angles = ik_direct(*positions)
-
-        assert len(joint_angles) == self.num_motors, 'Number of motors mismatch for position \'{}\''.format(goal.end)
-
-        # Set the desired positions in the controllers
-        for setpt, controller in zip(joint_angles, self.pid_list):
-            controller.setpoint = setpt
-        # TODO: Above might not work if the controller is copied in the zip
-
-        finished = False
-        max_steps = (goal.end_time - goal.start_time) * ACTION_HZ
-
-        steps = 0
-        while not finished:
-            # Publish the velocities
-            self.pub_velocities(Float64MultiArray(
-                data=[self.pid_list[i](self.actuator_positions[i]) for i in range(self.num_motors)]))
-            # TODO: May be able to remove Float64MultiArray above, (unsure?)
-
-            # TODO: Calculate percentage complete based on position and setpoint
-            self._feedback.percent_complete += 10
-            self.action_server.publish_feedback(self._feedback)
-
-            rospy.Rate(ACTION_HZ).sleep()
-
-            if self.action_server.is_preempt_requested():
-                break
-
-            steps += 1
-
-            deltas = [abs(self.pid_list[i].setpoint - self.actuator_positions[i]) for i in range(self.num_motors)]
-            if max(deltas) < TOLERANCE:
-                finished = True
-
-            if steps >= max_steps:
-                break
-
-        self._result.result.name = goal.name
-        self._result.result.time_ended = rospy.Time().now()
-
-        if not finished:
-            # Report a failure
-            self._result.result.final_position = 'unknown'
-            self.action_server.set_aborted(self._result)
-        else:
-            # Report a success
-            self._result.result.final_position = goal.end
-            self.action_server.set_succeeded(self._result)
+        return joint_angles
 
 
 class UR5B_Rail(Controller):
     def __init__(self):
         super().__init__('ur5b_rail', 1)
-
-        self.pid_list = []
-        for motor in self.pid_constants:
-            self.pid_list.append(PID(
-                motor['PID'], setpoint=motor['setpoint'],
-                output_limits=(-motor['max_vel'], motor['max_vel']),
-                sample_time=None))
-
-    def execute(self, goal):
-        # Interpret the text position into a 3d position
-        try:
-            positions = Controller.positions[goal.end][0]
-        except KeyError:
-            print('Unknown position \'{}\' for system \'{}\''.format(goal.end, self.ns))
-        assert len(positions) == self.num_motors, 'Number of motors mismatch for position \'{}\''.format(goal.end)
-
-        # Set the desired positions in the controllers
-        for i in range(len(positions)):
-            self.pid_list[i].setpoint = positions[i]
-
-        finished = False
-        max_steps = (goal.end_time - goal.start_time) * ACTION_HZ
-
-        steps = 0
-        while not finished:
-            # Publish the velocities
-            self.pub_velocities(Float64MultiArray(
-                data=[self.pid_list[i](self.actuator_positions[i]) for i in range(self.num_motors)]))
-            # TODO: May be able to remove Float64MultiArray above, (unsure?)
-
-            # TODO: Calculate percentage complete based on position and setpoint
-            self._feedback.percent_complete += 10
-            self.action_server.publish_feedback(self._feedback)
-
-            rospy.Rate(ACTION_HZ).sleep()
-
-            if self.action_server.is_preempt_requested():
-                break
-
-            steps += 1
-
-            deltas = [abs(self.pid_list[i].setpoint - self.actuator_positions[i]) for i in range(self.num_motors)]
-            if max(deltas) < TOLERANCE:
-                finished = True
-
-            if steps >= max_steps:
-                break
-
-        self._result.result.name = goal.name
-        self._result.result.time_ended = rospy.Time().now()
-
-        if not finished:
-            # Report a failure
-            self._result.result.final_position = 'unknown'
-            self.action_server.set_aborted(self._result)
-        else:
-            # Report a success
-            self._result.result.final_position = goal.end
-            self.action_server.set_succeeded(self._result)

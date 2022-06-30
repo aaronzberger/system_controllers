@@ -1,16 +1,14 @@
 #!/usr/bin/python3
 
-from ur5a import UR5A_Arm, UR5A_Rail
-from ur5b import UR5B_Arm, UR5B_Rail
-from free_flyer import Free_Flyer, Free_Flyer_Arm
-
+import rospy
 from termcolor import colored
 
-import rospy
-
+from free_flyer import Free_Flyer, Free_Flyer_Arm
+from ur5a import UR5A_Arm, UR5A_Rail
+from ur5b import UR5B_Arm, UR5B_Rail
 
 if __name__ == '__main__':
-    rospy.init_node('system_controllers', log_level=rospy.INFO)
+    rospy.init_node('system_controllers', log_level=rospy.ERROR)
 
     subsystems = [UR5A_Arm, UR5A_Rail, UR5B_Arm, UR5B_Rail, Free_Flyer, Free_Flyer_Arm]
     subsystem_names = ['ur5a_arm', 'ur5a_rail', 'ur5b_arm', 'ur5b_rail', 'free_flyer', 'free_flyer_arm']

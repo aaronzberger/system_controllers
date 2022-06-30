@@ -81,17 +81,17 @@
         "X": {
             "PID": [200, 0, 0],
             "setpoint": 0,
-            "max_vel": 5.5
+            "max_vel": 6
         },
         "Y": {
             "PID": [200, 0, 0],
             "setpoint": 0,
-            "max_vel": 5.5
+            "max_vel": 6
         },
         "Z": {
             "PID": [200, 0, 0],
             "setpoint": 0,
-            "max_vel": 5.5
+            "max_vel": 6
         }
     },
     "free_flyer_arm": {
