@@ -31,6 +31,13 @@
             "max_vel": 10
         }
     },
+    "ur5a_gripper": {
+        "gripper": {
+            "PID": [7.5, 0.0, 0.0],
+            "setpoint": 0,
+            "max_vel": 1
+        }
+    },
     "ur5a_rail": {
         "rail": {
             "PID": [40, 0, 1.5],
@@ -68,6 +75,13 @@
             "PID": [15, 0.0, 0.01],
             "setpoint": 0,
             "max_vel": 10
+        }
+    },
+    "ur5b_gripper": {
+        "gripper": {
+            "PID": [7.5, 0.0, 0.0],
+            "setpoint": 0,
+            "max_vel": 1
         }
     },
     "ur5b_rail": {

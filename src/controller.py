@@ -59,6 +59,9 @@ class Controller():
         self._action_server = actionlib.SimpleActionServer(ns, action.PerformTaskAction, self.execute, False)
         self._action_server.start()
 
+        # Update the velocities periodically regardless of whether a goal is being pursued
+        rospy.Timer(rospy.Duration(1.0 / ACTION_HZ), self.update_velocities)
+
     def update_positions(self, data: Float64MultiArray):
         received_positions = np.take(data.data, self.motor_ids)
         assert self.actuator_positions.size == received_positions.size, \
@@ -72,9 +75,15 @@ class Controller():
         required to reach the desired position is not exactly the position'''
         return positions
 
+    def update_velocities(self, event: rospy.timer.TimerEvent):
+        self._pub_velocities.publish(Float64MultiArray(
+            data=[self._pid_list[i](self.actuator_positions[i]) for i in range(self.num_motors)]))
+        # TODO: May be able to remove Float64MultiArray above, (unsure?)
+
     def execute(self, goal):
         self._result.result.name = goal.task.name
         start_time = rospy.Time().now()
+        # print('task {}: received'.format(goal.task.name))
 
         def fail():
             self._result.result.time_ended = (rospy.Time().now() - start_time).to_sec() + goal.task.start_time
@@ -93,7 +102,7 @@ class Controller():
         joint_angles = self.position_to_joint_angles(positions)
 
         assert len(joint_angles) == self.num_motors, \
-            'Number of motors mismatch for position \'{}\''.format(goal.task.end)
+            'Number of motors mismatch for position \'{}\''
 
         # Set the desired positions in the controllers
         for setpt, controller in zip(joint_angles, self._pid_list):
@@ -101,15 +110,11 @@ class Controller():
 
         max_steps = (goal.task.end_time - goal.task.start_time) * ACTION_HZ
         steps = 0
+        # print('task {}: about to enter loop with max steps {}'.format(goal.task.name, max_steps))
 
         # Calculate the offset of each joint to its target, to be used to determine the success of this action
         deltas = [abs(self._pid_list[i].setpoint - self.actuator_positions[i]) for i in range(self.num_motors)]
         while max(deltas) > TOLERANCE:
-            # Publish the velocities
-            self._pub_velocities.publish(Float64MultiArray(
-                data=[self._pid_list[i](self.actuator_positions[i]) for i in range(self.num_motors)]))
-            # TODO: May be able to remove Float64MultiArray above, (unsure?)
-
             # TODO: Calculate percentage complete based on position and setpoint
             self._feedback.percent_complete += 1
             self._action_server.publish_feedback(self._feedback)
@@ -120,13 +125,14 @@ class Controller():
                 return fail()
 
             if steps >= max_steps:
+                print('task {}: max steps triggered'.format(goal.task.name))
                 return fail()
 
             steps += 1
 
             deltas = [abs(self._pid_list[i].setpoint - self.actuator_positions[i]) for i in range(self.num_motors)]
 
-        self._result.result.time_ended = (rospy.Time().now() - start_time).to_sec() + goal.start_time
+        self._result.result.time_ended = (rospy.Time().now() - start_time).to_sec() + goal.task.start_time
         self._result.result.final_position = goal.task.end
         self._result.result.succeeded = True
-        self._action_server.set_succeeded(self._result)
+        return self._action_server.set_succeeded(self._result)

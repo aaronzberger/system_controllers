@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import rospy
-from std_msgs.msg import Float64MultiArray
 
 from controller import ACTION_HZ, TOLERANCE, Controller
 
@@ -43,11 +42,6 @@ class Free_Flyer(Controller):
             # Calculate the offset of each joint to its target, to be used to determine the success of this action
             deltas = [abs(self._pid_list[i].setpoint - self.actuator_positions[i]) for i in range(self.num_motors)]
             while max(deltas) > tolerance:
-                # Publish the velocities
-                self._pub_velocities.publish(Float64MultiArray(
-                    data=[self._pid_list[i](self.actuator_positions[i]) for i in range(self.num_motors)]))
-                # TODO: May be able to remove Float64MultiArray above, (unsure?)
-
                 # TODO: Calculate percentage complete based on position and setpoint
                 self._feedback.percent_complete += 1
                 self._action_server.publish_feedback(self._feedback)
@@ -69,7 +63,7 @@ class Free_Flyer(Controller):
         go_to_position(first_position, max_steps=max_total_steps / 3, tolerance=0.1, fail_ok=True)
         go_to_position(joint_angles, max_steps=2/3 * max_total_steps, tolerance=TOLERANCE)
 
-        self._result.result.time_ended = (rospy.Time().now() - start_time).to_sec() + goal.start_time
+        self._result.result.time_ended = (rospy.Time().now() - start_time).to_sec() + goal.task.start_time
         self._result.result.final_position = goal.task.end
         self._result.result.succeeded = True
         self._action_server.set_succeeded(self._result)

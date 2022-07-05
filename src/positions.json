@@ -14,9 +14,11 @@
     "ur5a_arm": {
         "contracted": [[0, -0.2, 0.9], [0, 0, -1]],
         "cylinderA-fixture1": [[-0.15, 0.3, 0.4], [0, 0, 0]],
-        "cylinderA-fixture2": [[0.25, 0.2, 0.4], [0, 0, 0]],
-        "gripper_open": [0.0],
-        "gripper_closed": [-0.5]
+        "cylinderA-fixture2": [[0.25, 0.2, 0.4], [0, 0, 0]]
+    },
+    "ur5a_gripper": {
+        "open": [0.0],
+        "closed": [-0.5]
     },
     "ur5a_rail": {
         "r-blk1": [0.16],
@@ -34,9 +36,11 @@
         "contracted": [[0, -0.2, 0.9], [0, 0, -1]],
         "sorbent-bed-filter": [[0.2, 0.9, 0.2], [0, 0, 1]],
         "recycle-bin": [[0.6, -0.15, 0.6], [0, 0, -1]],
-        "spare-filters-bin": [[0.6, -0.4, 0.1], [0, 0, -1]],
-        "gripper_open": [0.0],
-        "gripper_closed": [-0.5]
+        "spare-filters-bin": [[0.6, -0.4, 0.1], [0, 0, -1]]
+    },
+    "ur5b_gripper": {
+        "open": [0.0],
+        "closed": [-0.5]
     },
     "ur5b_rail": {
         "r-blk1": [-1.6],
