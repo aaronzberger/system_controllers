@@ -110,8 +110,8 @@
     },
     "free_flyer_arm": {
         "arm": {
-            "PID": [42, 0.1, 0.0],
-            "setpoint": 0,
+            "PID": [21, 0.1, 0.0],
+            "setpoint": 0.2,
             "max_vel": 5.5
         }
     }

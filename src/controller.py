@@ -78,12 +78,10 @@ class Controller():
     def update_velocities(self, event: rospy.timer.TimerEvent):
         self._pub_velocities.publish(Float64MultiArray(
             data=[self._pid_list[i](self.actuator_positions[i]) for i in range(self.num_motors)]))
-        # TODO: May be able to remove Float64MultiArray above, (unsure?)
 
-    def execute(self, goal):
+    def execute(self, goal: action.PerformTaskGoal):
         self._result.result.name = goal.task.name
         start_time = rospy.Time().now()
-        # print('task {}: received'.format(goal.task.name))
 
         def fail():
             self._result.result.time_ended = (rospy.Time().now() - start_time).to_sec() + goal.task.start_time
@@ -95,7 +93,8 @@ class Controller():
         try:
             positions = self.defined_positions[goal.task.end]
         except KeyError:
-            print('Unknown position \'{}\' for system \'{}\''.format(goal.task.end, self.ns))
+            print('Unknown position \'{}\' for system \'{}\' in action {}'.format(
+                goal.task.end, self.ns, goal.task.name))
             return fail()
 
         # Translate these positions into joint angles according to this subsystem
@@ -104,19 +103,24 @@ class Controller():
         assert len(joint_angles) == self.num_motors, \
             'Number of motors mismatch for position \'{}\''
 
+        # Store how far off each joint is to calculate progress during execution
+        starting_offsets = [abs(i - j) for i, j in zip(joint_angles, self.actuator_positions)]
+
         # Set the desired positions in the controllers
         for setpt, controller in zip(joint_angles, self._pid_list):
             controller.setpoint = setpt
 
         max_steps = (goal.task.end_time - goal.task.start_time) * ACTION_HZ
         steps = 0
-        # print('task {}: about to enter loop with max steps {}'.format(goal.task.name, max_steps))
 
         # Calculate the offset of each joint to its target, to be used to determine the success of this action
         deltas = [abs(self._pid_list[i].setpoint - self.actuator_positions[i]) for i in range(self.num_motors)]
         while max(deltas) > TOLERANCE:
-            # TODO: Calculate percentage complete based on position and setpoint
-            self._feedback.percent_complete += 1
+            # Calculate percentage complete based on each joint's progress from its starting location
+            progress_per_joint = []
+            for i in range(len(joint_angles)):
+                progress_per_joint.append((1 - (deltas[i] / starting_offsets[i])) * 100)
+            self._feedback.percent_complete = np.mean(progress_per_joint)
             self._action_server.publish_feedback(self._feedback)
 
             rospy.Rate(ACTION_HZ).sleep()
